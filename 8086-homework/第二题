@@ -1,0 +1,83 @@
+;两题均使用emu8086
+DATA SEGMENT
+    STR  DB 300 DUP(' ')
+    ID1  DB  'NAME: Li Hai Yang$'
+    ID2  DB  'ID: 1500017703$'
+    FIND_STR  DB  'Got it !Location is :$'
+    NOT_FIND_STR  DB  'Sorry!$'
+DATA ENDS
+
+STACK SEGMENT
+    DB 100 DUP(0)
+STACK ENDS
+
+CODE SEGMENT
+    ASSUME  DS:DATA,CS:CODE,SS:STACK
+START:
+    MOV  AX,DATA
+    MOV  DS,AX
+    MOV  AX,STACK
+    MOV  SS,AX            ;存储ds，ss寄存器
+    LEA  DX,STR
+    MOV  AH,0AH
+    INT  21H              ;读取字符串
+     
+READ_CHAR:
+    MOV  AH,1
+    INT  21H               ;读取查找的字符
+    MOV  CL,AL
+    INT  21H               ;读取回车字符
+    MOV  AL,CL
+    CMP  AL,27             ;如果是ecs直接退出
+    JE   OVER        
+    MOV  CX,0
+    LEA  BX,STR
+    MOV  CL,[BX+1H]        ;取得读入的字符串的长度
+    MOV  DX,BX
+    ADD  DX,2 
+ROTATE:
+    MOV  BX,DX         
+    ADD  BX,CX
+    MOV  AH,[BX]          ;从后向前遍历字符串 
+    CMP  AH,AL
+    JE   FIND             ;找到相同字符，位置存储在CL
+    SUB  CL,1
+    CMP  CL,-1
+    JNE  ROTATE            ;循换没结束则继续，结束则跳转到没找到
+    JMP  NOT_FIND
+FIND:
+    LEA  DX,FIND_STR      ;找到了，输出预设字符串和字符下标
+    MOV  AH,9
+    INT  21H
+    ADD  CL,48
+    MOV  AH,2
+    MOV  DL,CL
+    INT  21H               ;输出字符下标
+    CALL PRINT_ENTER
+    JMP  READ_CHAR         ;继续读取字符
+NOT_FIND:
+    LEA  DX,NOT_FIND_STR
+    MOV  AH,9
+    INT  21H             ;每找到，打印sorry
+    CALL PRINT_ENTER
+    JMP  READ_CHAR    
+PRINT_ENTER:             ;打印回车换行的功能函数
+    MOV   AH,  2
+    MOV   DL,  10
+    INT   21H 
+    MOV   AH,  2
+    MOV   DL,  13
+    INT   21H 
+    RET 
+OVER:
+    LEA  DX,ID1
+    MOV  AH,9
+    INT 21H                ;结束，打印姓名学号
+    CALL  PRINT_ENTER
+    LEA  DX,ID2
+    INT 21H
+CODE ENDS
+    ENDS START
+       
+    
+    
