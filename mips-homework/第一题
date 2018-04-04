@@ -1,0 +1,183 @@
+        .text
+main:    
+        j       store_str         # store the str to the memory
+begin:
+        li      $v0,12
+        syscall
+        beq   $v0,63,end        #? means end  ? = 63
+        sle   $t0,$v0,47
+        beq   $t0,1,not_num_char         # wrong
+        sle   $t0,$v0,57
+        beq   $t0,1,num            #input a number
+        sle   $t0,$v0,64
+        beq   $t0,1,not_num_char   #input something wrong
+        sle   $t0,$v0,90
+        beq   $t0,1,big_char       # input a big char 
+        sle   $t0,$v0,96
+        beq   $t0,1,not_num_char   # somethong wrong
+        sle   $t0,$v0,122
+        beq   $t0,1,small_char    #input a small char 
+        j     not_num_char        # something wrong
+        
+num:         #print the english num
+        addi  $v0,$v0,-48
+        mul   $v0,$v0,4
+        add   $v0,$v0,$sp              # get the address of the num
+        lw    $a0,($v0)
+        li    $v0,4
+        syscall                       #print the string
+        li    $v0,11
+        li    $a0,10
+        syscall                       #  print the Enter
+        j     begin
+small_char:
+        move  $a0,$v0
+        li    $v0,11
+        syscall
+        move  $v0,$a0
+        addi  $v0,$v0,-87
+        mul   $v0,$v0,4
+        add   $v0,$v0,$sp
+        lw    $a0,($v0)
+        li    $v0,4
+        syscall
+        li    $v0,11
+        li    $a0,10
+        syscall
+        j     begin
+big_char:
+        move  $a0,$v0
+        li    $v0,11
+        syscall
+        move  $v0,$a0
+        addi  $v0,$v0,-65
+        mul   $v0,$v0,4
+        add   $v0,$v0,$sp
+        lw    $a0,($v0)
+        li    $v0,4
+        syscall
+        li    $v0,11
+        li    $a0,10
+        syscall
+        j     begin
+not_num_char:     # print *
+        li  $v0,11
+        li  $a0,42
+        syscall
+        li    $v0,11
+        li    $a0,10
+        syscall
+        j   begin
+store_str:
+        addi $sp,$sp,-160    #make room for the address of "L0" on the stack
+        la   $t1,L0
+        sw   $t1,0($sp)
+        la   $t1,L1
+        sw   $t1,4($sp)
+        la   $t1,L2
+        sw   $t1,8($sp)
+        la   $t1,L3
+        sw   $t1,12($sp)
+        la   $t1,L4
+        sw   $t1,16($sp)
+        la   $t1,L5
+        sw   $t1,20($sp)
+        la   $t1,L6
+        sw   $t1,24($sp)
+        la   $t1,L7
+        sw   $t1,28($sp)
+        la   $t1,L8
+        sw   $t1,32($sp)
+        la   $t1,L9
+        sw   $t1,36($sp)
+        la   $t1,Ca
+        sw   $t1,40($sp)
+        la   $t1,Cb
+        sw   $t1,44($sp)
+        la   $t1,Cc
+        sw   $t1,48($sp)
+        la   $t1,Cd
+        sw   $t1,52($sp)
+        la   $t1,Ce
+        sw   $t1,56($sp)
+        la   $t1,Cf
+        sw   $t1,60($sp)
+        la   $t1,Cg
+        sw   $t1,64($sp)
+        la   $t1,Ch
+        sw   $t1,68($sp)
+        la   $t1,Ci
+        sw   $t1,72($sp)
+        la   $t1,Cj
+        sw   $t1,76($sp)
+        la   $t1,Ck
+        sw   $t1,80($sp)
+        la   $t1,Cl
+        sw   $t1,84($sp)
+        la   $t1,Cm
+        sw   $t1,88($sp)
+        la   $t1,Cn
+        sw   $t1,92($sp)
+        la   $t1,Co
+        sw   $t1,96($sp)
+        la   $t1,Cp
+        sw   $t1,100($sp)
+        la   $t1,Cq
+        sw   $t1,104($sp)
+        la   $t1,Cr
+        sw   $t1,108($sp)
+        la   $t1,Cs
+        sw   $t1,112($sp)
+        la   $t1,Ct
+        sw   $t1,116($sp)
+        la   $t1,Cu
+        sw   $t1,120($sp)
+        la   $t1,Cv
+        sw   $t1,124($sp)
+        la   $t1,Cw
+        sw   $t1,128($sp)
+        la   $t1,Cx
+        sw   $t1,132($sp)
+        la   $t1,Cy
+        sw   $t1,136($sp)
+        la   $t1,Cz
+        sw   $t1,140($sp)
+        j    begin
+end:     
+        .data  
+L0: .asciiz "Zero"
+L1: .asciiz "First"
+L2: .asciiz "Second"
+L3: .asciiz "Third"
+L4: .asciiz "Forth"
+L5: .asciiz "Fifth"
+L6: .asciiz "Sixth"
+L7: .asciiz "Seventh"
+L8: .asciiz "Eighth"
+L9: .asciiz "Ninth"
+Ca: .asciiz "lpha"
+Cb: .asciiz "ravo"
+Cc: .asciiz "hina"
+Cd: .asciiz "elta"
+Ce: .asciiz "cho"
+Cf: .asciiz "oxtrot"
+Cg: .asciiz "olf"
+Ch: .asciiz "otel"
+Ci: .asciiz "ndia"
+Cj: .asciiz "uliet"
+Ck: .asciiz "ilo"
+Cl: .asciiz "ima"
+Cm: .asciiz "ary"
+Cn: .asciiz "ovember"
+Co: .asciiz "scar"
+Cp: .asciiz "aper"
+Cq: .asciiz "uebec"
+Cr: .asciiz "esearch"
+Cs: .asciiz "ierra"
+Ct: .asciiz "ango"
+Cu: .asciiz "niform"
+Cv: .asciiz "ictor"
+Cw: .asciiz "hisky"
+Cx: .asciiz "-ray"
+Cy: .asciiz "ankee"
+Cz: .asciiz "ulu"        
