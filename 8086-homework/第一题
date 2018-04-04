@@ -1,0 +1,220 @@
+;两题均使用emu8086
+DATA SEGMENT 
+     N0  db  'Zero$'
+     N1  db  'First$'
+     N2  db  'Second$'
+     N3  db  'Third$'
+     N4  db  'Forth$'
+     N5  db  'Fifth$'
+     N6  db  'Sixth$'
+     N7  db  'Seventh$'
+     N8  db  'Eighth'
+     N9  db  'Ninth'
+     Ca  db  'lpha$'  
+     Cb  db  'ravo$'
+     Cc  db  'hina$'
+     Cd  db  'elta$'
+     Ce  db  'cho$'
+     Cf  db  'oxtrot$'
+     Cg  db  'olf$'
+     Ch_  db  'otel$'
+     Ci  db  'ndia$'
+     Cj  db  'uliet$'
+     Ck  db  'ilo$'
+     Cl_  db  'ima$'
+     Cm  db  'ary$'
+     Cn  db  'ovember$'
+     Co  db  'scar$'
+     Cp  db  'aper$'
+     Cq  db  'uebec$'
+     Cr  db  'esearch$'
+     Cs_  db  'ierra$'
+     Ct  db  'ango$'
+     Cu  db  'niform$'
+     Cv  db  'ictor$'
+     Cw  db  'hisky$'
+     Cx_  db  '-ray$'
+     Cy  db  'ankee$'
+     Cz  db  'ulu$'          
+     ID1   DB  'NAME:Li Haiyang$'
+     ID2   DB  'ID:1500017703$'
+     ADDRESS  DB  200 DUP(0) 
+DATA ENDS  
+
+STACK SEGMENT
+    DB  200  DUP(0)
+STACK ENDS
+
+CODE SEGMENT 
+    ASSUME    CS:CODE,DS:DATA,SS:STACK
+START:
+    MOV   AX,  DATA
+    MOV   DS,  AX
+    MOV   AX,  STACK
+    MOV   SS,  AX
+    JMP   STORE_STR         ; store the str to the memory
+READ_CHAR:              ;read the char from keyboard
+    MOV  AH, 1
+    INT  21H
+    CMP  AL,27  
+    LOOPNZ  JUDGE       ;如果是ecs直接退出
+    JMP  OVER
+JUDGE:
+    CMP  AL,47
+    JNA  OTHERS     ; not a number or a charater
+    CMP  AL,57
+    JNA  NUMBERS    ; is a number between 0-10
+    CMP  AL,64
+    JNA  OTHERS     ; not a number or a char
+    CMP  AL,90
+    JNA  BIG_CHAR   ;is between A-Z
+    CMP  AL,96
+    JNA  OTHERS     ;not a number or char
+    CMP  AL,122
+    JNA  SMALL_CHAR ;is between a-z
+    JMP  OTHERS     ; not a number or a char
+OTHERS:               ;既不是字母也不是数字，直接输出*
+    MOV  AH,2
+    MOV  DL,42
+    INT  21H
+    CALL PRINT_ENTER
+    JMP  READ_CHAR
+BIG_CHAR:           ;先打印首字母，然后寻址打印后序字符串
+    MOV  BL,AL
+    MOV  BH,0
+    MOV  DL,AL
+    MOV  AH,2
+    INT  21H      ;print the char inputed
+    SUB  BX,55
+    ADD  BX,BX
+    ADD  BX,BX
+    LEA  CX,ADDRESS 
+    ADD  BX,CX    ;get the address of the str
+    MOV  DX,[BX]
+    MOV  AH,9
+    INT  21H      ; out put the str
+    CALL PRINT_ENTER
+    JMP  READ_CHAR
+SMALL_CHAR:          ;和大写字母开头原理相同
+    MOV  BL,AL 
+    MOV  BH,0
+    MOV  DL,AL
+    MOV  AH,2
+    INT  21H     ; print the char inputed
+    SUB  BX,87
+    ADD  BX,BX
+    ADD  BX,BX 
+    LEA  CX,ADDRESS
+    ADD  BX,CX   ; get the address of the str
+    MOV  DX,[BX]
+    MOV  AH,9
+    INT  21H
+    CALL PRINT_ENTER
+    JMP  READ_CHAR
+NUMBERS:           ;数字直接打印对应的字符串
+    MOV  BL,AL
+    MOV  BH,0
+    SUB  BX,48 
+    ADD  BX,BX
+    ADD  BX,BX
+    LEA  CX,ADDRESS    ;得到字符串地址
+    ADD  BX,CX
+    MOV  DX,[BX]
+    MOV  AH,9
+    INT  21H
+    CALL PRINT_ENTER
+    JMP  READ_CHAR    
+PRINT_ENTER:         ;打印回车键换行
+    MOV   AH,  2
+    MOV   DL,  10
+    INT   21H 
+    MOV   AH,  2
+    MOV   DL,  13
+    INT   21H 
+    RET
+STORE_STR:            ;存储每个字符串地址到address的地址下
+    LEA  BX,ADDRESS
+    LEA  DX, N0
+    MOV  [BX],DX
+    LEA  DX, N1
+    MOV  [BX+4],DX 
+    LEA  DX, N2
+    MOV  [BX+8],DX
+    LEA  DX, N3
+    MOV  [BX+12],DX
+    LEA  DX, N4
+    MOV  [BX+16],DX
+    LEA  DX, N5
+    MOV  [BX+20],DX
+    LEA  DX, N6
+    MOV  [BX+24],DX
+    LEA  DX, N7
+    MOV  [BX+28],DX
+    LEA  DX, N8
+    MOV  [BX+32],DX
+    LEA  DX, N9
+    MOV  [BX+36],DX
+    LEA  DX, Ca
+    MOV  [BX+40],DX
+    LEA  DX, Cb
+    MOV  [BX+44],DX
+    LEA  DX, Cc
+    MOV  [BX+48],DX
+    LEA  DX, Cd
+    MOV  [BX+52],DX
+    LEA  DX, Ce
+    MOV  [BX+56],DX
+    LEA  DX, Cf
+    MOV  [BX+60],DX
+    LEA  DX, Cg
+    MOV  [BX+64],DX
+    LEA  DX, Ch_
+    MOV  [BX+68],DX
+    LEA  DX, Ci
+    MOV  [BX+72],DX
+    LEA  DX, Cj
+    MOV  [BX+76],DX
+    LEA  DX, Ck
+    MOV  [BX+80],DX
+    LEA  DX, Cl_
+    MOV  [BX+84],DX
+    LEA  DX, Cm
+    MOV  [BX+88],DX
+    LEA  DX, Cn
+    MOV  [BX+92],DX
+    LEA  DX, Co
+    MOV  [BX+96],DX 
+    LEA  DX, Cp
+    MOV  [BX+100],DX
+    LEA  DX, Cq
+    MOV  [BX+104],DX
+    LEA  DX, Cr
+    MOV  [BX+108],DX
+    LEA  DX, Cs_
+    MOV  [BX+112],DX
+    LEA  DX, Ct
+    MOV  [BX+116],DX
+    LEA  DX, Cu
+    MOV  [BX+120],DX
+    LEA  DX, Cv
+    MOV  [BX+124],DX
+    LEA  DX, Cw
+    MOV  [BX+128],DX
+    LEA  DX, Cx_
+    MOV  [BX+132],DX
+    LEA  DX, Cy
+    MOV  [BX+136],DX
+    LEA  DX, Cz
+    MOV  [BX+140],DX  
+    JMP  READ_CHAR
+OVER:
+    MOV   DX,  OFFSET  ID1
+    MOV   AH,  9
+    INT   21H           ;print the name
+    CALL  PRINT_ENTER
+    MOV   DX,  OFFSET  ID2
+    MOV   AH,  9
+    INT   21H 
+    CALL  PRINT_ENTER         ;print the id   
+CODE   ENDS
+    END   START
