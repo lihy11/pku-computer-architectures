@@ -1,0 +1,50 @@
+        .text
+main:
+      addi  $sp,$sp,-100
+      move  $a0,$sp
+      li    $a1,99
+      li    $v0,8
+      syscall            # read a string ,max size is 99
+read_char:
+      li    $v0,12
+      syscall
+      move  $t0,$v0      # move the char read to $t0
+      li    $v0,12
+      syscall            #read the Enter
+      beq   $t0,63,end
+      li    $t1,0        # the current i 
+Loop: 
+      add   $t3,$sp,$t1
+      lb    $t2,($t3)        #load the char
+      beq   $t2,0,printfail           #if is the \0
+      beq   $t2,$t0,printsuccess      #if find
+      addi  $t1,$t1,1                 # to the next char
+      j     Loop
+      
+printsuccess:
+      la    $a0,success
+      li    $v0,4
+      syscall              #print success
+      li    $v0,1
+      move  $a0,$t1
+      addi  $a0,$a0,1 
+      syscall              #print location
+      li    $v0,11
+      li    $a0,10
+      syscall             #print Enter
+      j     read_char
+      
+printfail:
+      la    $a0,fail
+      li    $v0,4
+      syscall            #print fail
+      li    $v0,11
+      li    $a0,10
+      syscall           #print  Enter
+      j     read_char
+      
+end:
+
+        .data
+success:   .asciiz  "Success! Location:"
+fail:      .asciiz  "Fail!"
